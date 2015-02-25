@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notification</title>
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/amelia-bootstrap.min.css">
+  <link href="css/app.css" rel="stylesheet" />
+</head>
+<body>
+
+<div class="row ">
+    <div class="col-sm-7 container-panel col-centered">
+
+        <form class="notification ">
+            
+        <div class="annonces-et-promotions highlighted-text clearfix">Annonces et promotions</div><br>
+        <input name="chk1" type="checkbox"> Announces produits<br>
+        <input name="chk2" type="checkbox"> Promotions<br>
+        <hr class="faded">
+        <div class="highlighted-text clearfix">Demander un service</div>
+        <input name="chk3" type="checkbox"> Demande recue<br>
+        <input name="chk4" type="checkbox" disabled> <span class="gray-text">Question publique</span><br>
+        <input name="chk5" type="checkbox" disabled> <span class="gray-text">Nouvelle Offre</span><br>
+        <input name="chk6" type="checkbox" disabled> <span class="gray-text">Nouveau message</span><br>
+        <input name="chk7" type="checkbox"> Attente de votre reponse<br>
+        <input name="chk8" type="checkbox"> Rendez-vous fixe<br>
+        <input name="chk9" type="checkbox"> Avis et evaluation sur le professionnel<br>
+        <input name="chk10" type="checkbox"> Demande non aboutie<br>
+
+        <div class="buttonHolder">
+            <button name="submit" class="btn btn-primary btn-lg btn-custom " value="">Enregistrer les changements</button>
+        </div>
+        </form>
+
+    </div>
+    <div class="col-sm-5 col-centered">
+
+    </div>
+</div>
+
+
+    <script>
+
+    $.ajax({
+                    type: "POST",
+                    url: "Kalori_Cetveli.aspx/FoodDetails",
+                    data: "{FoodId:'" + FoodId + "'}",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (result) {
+                        if (result.d == -10)
+                            window.location = "/login.aspx";
+                        var Detay = $.parseJSON(result.d);
+                        if (Detay.durum == "1") {
+                            $("#spn_ProductFriendsListHeader").text(Detay.YiyecekAdi + " tüketen arkadaşlarım");
+                            $("#t2_Default").css("display", "none");
+                            $("#dv_FoodDetail").css("display", "block");
+                            $("#spn_MycountOfEatedFood").text(Detay.AdetYedim);
+                            $("#spn_CountOfUser").text(Detay.AdetKisiYedi);
+                            $("#spn_CountOfEatedFood").text(Detay.AdetYendi);
+                            $("#spn_OrderOfPopularity").text(Detay.PoplulerlikSirasi + ".");
+                            $("#spn_FoodName").text('100 gr ' + Detay.YiyecekAdi);
+                            $("#spn_Calorie").text(Detay.Kalori + " " + (Detay.Kalori ? "kcal" : ""));
+                            $("#spn_Carbonhydrate").text(Detay.Karbonhidrat + " " + (Detay.Karbonhidrat ? "gr" : ""));
+                            $("#spn_Protein").text(Detay.Protein + " " + (Detay.Protein ? "gr" : ""));
+                            $("#spn_Fat").text(Detay.Yag + " " + (Detay.Yag ? "gr" : ""));
+                            $("#dv_SearchResult").css('display', 'none');
+                            $("#dv_FoodDetail2").css('display', 'block');
+                            var arkadaslarhtml = "";
+                            if (Detay.Arkadaslar.length > 0) {
+                                for (var i = 0; i < Detay.Arkadaslar.length; i++) {
+                                    var arkadas = Detay.Arkadaslar[i];
+                                    arkadaslarhtml += "<li class='li_ProductFriend'><div class='dv_ProductFriendImage'><img src='";
+                                    arkadaslarhtml += arkadas.ArkadasResimAdresi;
+                                    arkadaslarhtml += "'></div><div class='dv_ProductFriendDetail'><span class='spn_ProductFriendName'>";
+                                    arkadaslarhtml += arkadas.ArkadasAdi;
+                                    arkadaslarhtml += " <small>(" + arkadas.ArkadasiminYedigiAdet + " Defa)</small></span><span class='spn_ProductFriendDetail'> En Son ";
+                                    arkadaslarhtml += arkadas.Tarih + " tarihinde Tüketti.";
+                                    //                                    arkadaslarhtml += arkadas.ArkadasiminYedigiAdet + " adet ";
+                                    arkadaslarhtml += "<br>Toplamda " + arkadas.Calories + " kcal Aldı.</span></div></li>";
+
+                                }
+                                $("#t3_Default").css("display", "none");
+                                $("#dv_ProductFriendsList").css("display", "block");
+                                $("#ul_ProductFriendsList").html(arkadaslarhtml);
+                                $("#dv_ProductFriendsListScrollContainer").jScrollPane({ showArrows: true, speed: 35, autoReinitialise: true });
+                            }
+                            else {
+                                $("#t3_Default").css("display", "none");
+                                $("#dv_ProductFriendsList").css("display", "block");
+                                $("#ul_ProductFriendsList").html("<li class='empityList'>Bu Ürünü Tüketen Arkadaşınız Yok</li>");
+                                $("#dv_ProductFriendsListScrollContainer").jScrollPane({ showArrows: true, speed: 35, autoReinitialise: true });
+                            }
+
+                        }
+                        else if (Detay.durum == "-1") {
+                            msgBoxAlert("Hata oluştu. Lütfen tekrar deneyiniz", "Bildiri");
+                        }
+                    },
+                    error: function () {
+                    }
+                });
+
+    </script>
+	
+
+
+	<script src="js/jquery-2.0.3.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+</body>
+</html>
